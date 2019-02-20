@@ -1,0 +1,64 @@
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+
+<style>
+.google-logo
+{
+	padding: 20px 0;
+}
+.google-search
+{
+	padding: 20px 10px;
+}
+.google-search:focus
+{
+	box-shadow:silver 0 2px 10px; 
+	border-color: silver;
+}
+.google-form .btn-group
+{
+	padding: 20px 0;
+}
+.btn-group>.btn
+{
+	border-radius: 0;
+	margin: 0 10px;
+}
+.btn
+{
+	background-color: #f2f2f2;
+	color: #757575;
+	font-weight: 900;
+}
+
+img{
+    width:40%;
+    height:25%;
+}
+
+</style>
+
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3 col-lg-6 col-lg-offset-3">
+		    <div class="row google-logo text-center">
+                {% load static %}
+		        <img src="{% static 'images/logo_wikipedia.png' %} ">	
+            </div>
+		    <div class="row google-form text-center">
+			    <form action="/search/" method="get">
+				    <div class="form-group">
+                        <input type="text" class="form-control google-search" name="q">
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-default">Wikipédia Search</button>
+                        </div>
+                    </div>
+			    </form>
+		    </div>
+	    </div>
+	</div>
+</div>

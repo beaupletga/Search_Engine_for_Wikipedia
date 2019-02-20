@@ -1,0 +1,58 @@
+<!doctype html>
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+  
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css" />
+
+  <style type="text/css">
+    #mynetwork {
+      width: 100%;
+      height: 1000px;
+      border: 1px solid lightgray;
+    }
+  </style>
+</head>
+<body>
+
+<div id="mynetwork"></div>
+
+<script type="text/javascript">
+    // vertices={{vertices}}
+    // edges={{edges}}
+    // console.log(vertices)
+    var nodes = new vis.DataSet([
+        {% for id,name,url in vertices %}
+        {id: {{id}}, label: '{{name}}',url:'{{url}}'},
+        {% endfor %}
+    ]);
+
+    // create an array with edges
+    var edges = new vis.DataSet([
+    {% for a,b in edges %}
+        {from: {{a}}, to: {{b}},arrows:'to'},
+    {% endfor %}
+    ]);
+    console.log(edges)
+
+    // create a network
+    var container = document.getElementById('mynetwork');
+    var data = {
+    nodes: nodes,
+    edges: edges
+    };
+    var options = {};
+    var network = new vis.Network(container, data, options);
+
+    network.on("selectNode", function (params) {
+        if (params.nodes.length === 1) {
+            var node = nodes.get(params.nodes[0]);
+            window.open(node.url, '_blank');
+        }
+    });
+
+</script>
+
+
+</body>
+</html>

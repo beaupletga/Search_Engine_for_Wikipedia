@@ -1,0 +1,276 @@
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+<style>
+    .search-title{
+        font-weight:normal;
+        color:#1a0dab;
+        font-size:18px;
+    }
+    .search-link{
+        color:#008443;
+    }
+
+    .search-link a{
+        color:#008443;
+        text-decoration:none
+    }
+
+
+    .search-para{
+        display:block;
+        color:#6a6a6a;
+    }
+    img{
+    width:70%;
+    height:10%;
+    }
+
+    #imaginary_container{
+    margin-top:20%; /* Don't copy this */
+}
+.stylish-input-group .input-group-addon{
+    background: white !important; 
+}
+.stylish-input-group .form-control{
+	border-right:0; 
+	box-shadow:0 0 0; 
+	border-color:#ccc;
+}
+.stylish-input-group button{
+    border:0;
+    background:transparent;
+}
+
+    .btn-group i{ cursor:pointer; text-decoration:none}
+
+</style>
+
+<script>
+
+function sort_div(column){
+    var toSort = document.getElementsByClassName('row_to_sort');
+    values=[]
+    if (column=="TF_IDF"){
+        
+        for (i=0;i<toSort.length;i++){
+            values.push(toSort[1].childNodes[5])
+        }
+    }
+    else if (column=="PR"){
+        for (i=0;i<toSort.length;i++){
+            values.push(toSort[1].childNodes[7])
+        }
+    }
+    else if (column=="Word2Vec"){
+        for (i=0;i<toSort.length;i++){
+            values.push(toSort[1].childNodes[9])
+        }
+    }
+    console.log(values)
+}
+</script>
+
+<div class="container-fluid" style="margin-top:50px;margin-left:20px; ">
+        <form action="/search/" method="get">
+	<div class="row">
+        <div class="col-sm-1" style="margin-top:0px; ">
+            {% load static %}
+            <a href="/"><img src="{% static 'images/logo_wikipedia.png' %}" ></a>	
+        </div>
+		<div class="col-sm-5" style="margin-top:20px ">
+		    <div class="row google-form text-center">
+			    
+				    <div class="input-group stylish-input-group">
+                            <input type="text" class="form-control"  placeholder="Search" name="q" value="{{Last_query}}">
+                           
+                            <span class="input-group-addon">
+                                <button type="submit">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>  
+                            </span>
+                    </div>
+			    
+		    </div>
+        </div>
+        <div class="col-sm-1 text-center" onclick="sort_div('TF_IDF')" style="margin-top:20px;margin-left:-5px;">
+                <b>TF IDF</b>
+        </div>
+        <div class="col-sm-1 text-center" style="margin-top:20px;margin-left:-5px; ">
+                <b>PR</b>
+        </div>
+        <div class="col-sm-1 text-center" style="margin-top:20px;margin-left:-5px; ">
+            <b>Word2Vec</b>
+        </div>
+        <div class="col-sm-1 text-center" style="margin-top:20px;margin-left:-5px; ">
+                <b>In Wikipedia</b>
+        </div>
+
+    </div>
+    <div class="row" id="correcting_row">
+        <div class="col-sm-1" style="margin-top:0px;"> </div>
+        <div class="col-sm-5" style="margin-top:0px;margin-left:-15px; ">
+            <form action="/search/" method="get">
+                <p>Essayez avec l'orthographe :<input type="submit" class="btn-link" name="q" value='{{query_corrected}}' /></p>
+            </form>
+        </div>
+        
+    </div>
+    <div class="row">
+        <div class="col-sm-1" style="margin-top:0px;">
+        </div>
+        <div class="col-sm-2" style="margin-top:0px;margin-left:-15px; ">
+            <b>Clean Text</b><p>{{time_clean_text}} s</p>
+            <b>TF-IDF</b><p>{{time_tf_idf}} s</p>
+            <b>Word2Vec</b><p>{{time_w2v}} s</p>
+            <b>Wikipédia</b><p>{{time_wikipedia}}</p>
+            <b>Spell Checker</b><p>{{time_correcting}}</p>
+            <b>Display PCA :</b>  <input type="checkbox" id="PCA" name="PCA" value="checked">
+        </div>
+        <div class="col-sm-4" id="plot_pca" style="width:40%;height:40%">
+               
+        </div>
+    </div>
+    </form>
+        {% for id,titles,texts,urls,dist_tf_idf,dist_pr,dist_word2vec,quality_from_wikipedia in zip_data %}
+        <div class="row row_to_sort">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-5" style="margin-bottom:20px;margin-left:-14px;">
+            <a href={{urls}}>   <span class="search-title"> {{titles}}</span></a><br>
+            <span class="search-link">
+                {{urls}}  
+                <div class="btn-group">
+                    <i  class="fa fa-caret-down dropdown-toggle "  data-toggle="dropdown" aria-hidden="true"></i> 
+                    <ul class="dropdown-menu" role="menu">
+                        <li><a href="#">Cached</a></li>
+                        <li><a href="#">Similar</a></li>
+                    </ul>
+                </div>
+            </span>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="#">Cached</a></li>
+                <li><a href="#">Another action</a></li>
+            </ul>
+            <span class="search-para">{{texts}}</span>
+        </div>
+        <div class="col-sm-1 text-center align-middle" style="margin-left:5;">
+                {{dist_tf_idf}}
+        </div>
+        <div class="col-sm-1 text-center align-middle" style="margin-left:5px;">
+                {{dist_pr}}
+        </div>
+        <div class="col-sm-1 text-center align-middle" style="margin-left:5px;">
+            {{dist_word2vec}}
+        </div>
+        <div class="col-sm-1 text-center align-middle" style="margin-left:5px;">
+                {{quality_from_wikipedia}}
+        </div>
+        <div>
+            <form action="/display_pr_graph/" method="get">
+                <button type="submit" name="graph_id" value={{id}}>
+                    Display Graph
+                </button>
+            </form>
+        </div>
+        
+    </div>
+        {% endfor %}
+    
+</div>
+
+<script>
+function clean_array(array){
+    array_tmp=[]
+    for (i=0;i<array.length;i++){
+    array_tmp.push(array[i][0])
+    }
+    return array_tmp
+}
+
+
+function display_pca()
+{
+    titles_tmp=[]
+    {% for lala in titles %}
+    titles_tmp.push("{{lala}}")
+    {% endfor %}
+
+    tmp={{PCA}}
+    if (tmp.length==0){
+        document.getElementById("plot_pca").style="width:0%;height:0%;";
+        return 0;
+    }
+    x_tmp=[]
+    y_tmp=[]
+    z_tmp=[]
+    for (i=0;i<tmp.length;i++){
+        x_tmp.push(tmp[i][0])
+        y_tmp.push(tmp[i][1])
+        z_tmp.push(tmp[i][2])
+    }
+    var trace1 = {
+        x:x_tmp, y: y_tmp, z: z_tmp,
+        mode: 'markers+text',
+        text:titles_tmp,
+        marker: {
+            size: 4,
+            line: {
+            color: 'rgba(217, 217, 217, 0.14)',
+            width: 0.5},
+            opacity: 0.8},
+        type: 'scatter3d',
+        name : "Wikipedia Articles"
+    };
+    tmp={{PCA_QUERY}}
+    var trace2 = {
+        x:[tmp[0]], y: [tmp[1]], z: [tmp[2]],
+        mode: 'markers+text',
+        text:["{{Last_query}}"],
+        marker: {
+            size: 15,
+            color:'rgba(210, 0, 0,1)',
+            line: {
+            color: 'rgba(210, 0, 0,1)',
+            width: 0.5},
+            opacity: 0.8},
+        type: 'scatter3d',
+        name:"Query"
+        
+    };
+
+    var data = [trace1,trace2];
+    var layout = {margin: {
+        l: 0,
+        r: 0,
+        b: 0,
+        t: 0
+    }};
+    Plotly.newPlot('plot_pca', data, layout);
+}
+
+
+function transform_to_bold(){
+    for (i=0;i<document.getElementsByClassName("search-para").length;i++){
+        a=document.getElementsByClassName("search-para")[i].innerText
+        a=a.replace( "&lt;", '<')
+        a=a.replace( "&gt;", '>')
+        document.getElementsByClassName("search-para")[i].innerHTML=a
+    }   
+}
+
+function hide_spell_checker()
+{
+    if ("{{query_corrected}}"=="")
+    {
+        document.getElementById("correcting_row").hidden=true;
+    }
+}
+
+hide_spell_checker()
+transform_to_bold()
+display_pca()
+</script>
