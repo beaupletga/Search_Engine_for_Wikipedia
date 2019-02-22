@@ -24,10 +24,18 @@
         display:block;
         color:#6a6a6a;
     }
-    img{
+    #wikipedia_logo{
     width:70%;
     height:10%;
     }
+
+    .center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    }
+
 
     #imaginary_container{
     margin-top:20%; /* Don't copy this */
@@ -72,6 +80,9 @@ function sort_div(column){
     }
     console.log(values)
 }
+
+
+
 </script>
 
 <div class="container-fluid" style="margin-top:50px;margin-left:20px; ">
@@ -79,14 +90,14 @@ function sort_div(column){
 	<div class="row">
         <div class="col-sm-1" style="margin-top:0px; ">
             {% load static %}
-            <a href="/"><img src="{% static 'images/logo_wikipedia.png' %}" ></a>	
+            <a href="/"><img src="{% static 'images/logo_wikipedia.png' %}" id="wikipedia_logo"></a>	
         </div>
 		<div class="col-sm-5" style="margin-top:20px ">
 		    <div class="row google-form text-center">
 			    
 				    <div class="input-group stylish-input-group">
-                            <input type="text" class="form-control"  placeholder="Search" name="q" value="{{Last_query}}">
-                           
+                            <input type="text" class="form-control" id="query" placeholder="Search" name="q" value="{{Last_query}}">
+                            <input name="k" type="hidden" value="20">
                             <span class="input-group-addon">
                                 <button type="submit">
                                     <span class="glyphicon glyphicon-search"></span>
@@ -106,23 +117,38 @@ function sort_div(column){
             <b>Word2Vec</b>
         </div>
         <div class="col-sm-1 text-center" style="margin-top:20px;margin-left:-5px; ">
-                <b>In Wikipedia</b>
+                <b>Total Score</b>
+            </div>
+        <div class="col-sm-1 text-center" style="margin-top:20px;margin-left:-5px; ">
+                <a id="wikipedia" style="text-decoration: none;" class="text-dark" ><b>In Wikipedia</b></a>
         </div>
 
     </div>
     <div class="row" id="correcting_row">
         <div class="col-sm-1" style="margin-top:0px;"> </div>
         <div class="col-sm-5" style="margin-top:0px;margin-left:-15px; ">
-            <form action="/search/" method="get">
-                <p>Essayez avec l'orthographe :<input type="submit" class="btn-link" name="q" value='{{query_corrected}}' /></p>
-            </form>
-        </div>
-        
+            <p>Essayez avec l'orthographe :<input type="submit" class="btn-link" name="q" value='{{query_corrected}}' /></p>
+        </div>        
     </div>
+
+    <div class="row">
+            <div class="col-sm-6" style="margin-top:0px;"> </div>
+            <div class="col-sm-1 text-center" style="margin-top:20px;margin-left:-5px;">
+                    <input id="coef_tf_idf" type="number" value="0.5" style="width:50;text-align:right;" onchange="sortTable()">
+            </div>
+            <div class="col-sm-1 text-center" style="margin-top:20px;margin-left:-5px;">
+                    <input id="coef_pr" type="number" value="0.25" style="width:50;text-align:right;" onchange="sortTable()">
+            </div>
+            <div class="col-sm-1 text-center" style="margin-top:20px;margin-left:-5px;">
+                    <input id="coef_w2v" type="number" value="0.25" style="width:50;text-align:right;" onchange="sortTable()" >
+            </div>        
+    </div>
+
+
     <div class="row">
         <div class="col-sm-1" style="margin-top:0px;">
         </div>
-        <div class="col-sm-2" style="margin-top:0px;margin-left:-15px; ">
+        <div class="col-sm-2" style="margin-top:0px;margin-left:-15px;" id="time_info">
             <b>Clean Text</b><p>{{time_clean_text}} s</p>
             <b>TF-IDF</b><p>{{time_tf_idf}} s</p>
             <b>Word2Vec</b><p>{{time_w2v}} s</p>
@@ -135,6 +161,7 @@ function sort_div(column){
         </div>
     </div>
     </form>
+    <div>
         {% for id,titles,texts,urls,dist_tf_idf,dist_pr,dist_word2vec,quality_from_wikipedia in zip_data %}
         <div class="row row_to_sort">
         <div class="col-sm-1">
@@ -157,14 +184,17 @@ function sort_div(column){
             </ul>
             <span class="search-para">{{texts}}</span>
         </div>
-        <div class="col-sm-1 text-center align-middle" style="margin-left:5;">
+        <div class="col-sm-1 text-center align-middle tf_idf" style="margin-left:5;">
                 {{dist_tf_idf}}
         </div>
-        <div class="col-sm-1 text-center align-middle" style="margin-left:5px;">
+        <div class="col-sm-1 text-center align-middle pr" style="margin-left:5px;">
                 {{dist_pr}}
         </div>
-        <div class="col-sm-1 text-center align-middle" style="margin-left:5px;">
+        <div class="col-sm-1 text-center align-middle w2v" style="margin-left:5px;">
             {{dist_word2vec}}
+        </div>
+        <div class="col-sm-1 text-center align-middle total_score" style="margin-left:5px;">
+                
         </div>
         <div class="col-sm-1 text-center align-middle" style="margin-left:5px;">
                 {{quality_from_wikipedia}}
@@ -174,12 +204,13 @@ function sort_div(column){
                 <button type="submit" name="graph_id" value={{id}}>
                     Display Graph
                 </button>
+                <input name="nb_nodes" type="hidden" value="50">
             </form>
         </div>
         
     </div>
         {% endfor %}
-    
+    </div>
 </div>
 
 <script>
@@ -270,7 +301,81 @@ function hide_spell_checker()
     }
 }
 
+document.getElementById("query").onkeyup = function()
+{
+    header="https://fr.wikipedia.org/w/index.php?search="
+    query=document.getElementById('query').value.replace(" ","+")
+    document.getElementById('wikipedia').href=header+query;
+    console.log(header+query)
+};
+
+
+header="https://fr.wikipedia.org/w/index.php?search="
+query=document.getElementById('query').value.replace(" ","+")
+document.getElementById('wikipedia').href=header+query;
+
+function compute_total_score()
+{
+    rows = document.getElementsByClassName("row_to_sort")
+    coef_tf_idf=parseFloat(document.getElementById('coef_tf_idf').value)
+    coef_pr=parseFloat(document.getElementById('coef_pr').value)
+    coef_w2v=parseFloat(document.getElementById('coef_w2v').value)
+    for (i = 0; i < (rows.length); i++) 
+    {
+        x_tf_idf = parseFloat(rows[i].getElementsByClassName("tf_idf")[0].innerText);
+        x_pr = parseFloat(rows[i].getElementsByClassName("pr")[0].innerText);
+        x_w2v = parseFloat(rows[i].getElementsByClassName("w2v")[0].innerText);
+        score=x_tf_idf*coef_tf_idf+x_pr*coef_pr-x_w2v*coef_w2v
+        rows[i].getElementsByClassName("total_score")[0].innerHTML=Math.round(score*1000)/1000;
+
+    }
+
+}
+
+
+function sortTable() {
+    compute_total_score()
+    console.log("Sort the table")
+    var rows, switching, i, x, y, shouldSwitch;
+    switching = true;
+    /* Make a loop that will continue until
+    no switching has been done: */
+    while (switching) {
+    // Start by saying: no switching is done:
+    switching = false;
+    rows = document.getElementsByClassName("row_to_sort")
+    /* Loop through all table rows (except the
+    first, which contains table headers): */
+    for (i = 0; i < (rows.length - 1); i++) {
+        // Start by saying there should be no switching:
+        shouldSwitch = false;
+        /* Get the two elements you want to compare,
+        one from current row and one from the next: */
+        
+        x = parseFloat(rows[i].getElementsByClassName("total_score")[0].innerText);
+        y = parseFloat(rows[i+1].getElementsByClassName("total_score")[0].innerText);
+        // Check if the two rows should switch place:
+        if (x<y) {
+        // If so, mark as a switch and break the loop:
+        shouldSwitch = true;
+        break;
+        }
+    }
+    if (shouldSwitch) {
+        /* If a switch has been marked, make the switch
+        and mark that a switch has been done: */
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+    }
+  }
+}
+
+
+
+
 hide_spell_checker()
 transform_to_bold()
 display_pca()
+sortTable()
+document.getElementById("coef_tf_idf").onkeyup=sortTable()
 </script>

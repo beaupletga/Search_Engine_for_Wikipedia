@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+    <head>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>  
+    </head>
+    <body>
+        <div  id="plot_pca" style="width:40%;height:40%">
+            
+        </div>
+    </body>
+
+    <script>
+    function display_pca_word2vec()
+    {
+    titles_tmp=[]
+    {% for lala in titles %}
+    titles_tmp.push("{{lala}}")
+    {% endfor %}
+
+    tmp={{PCA}}
+    if (tmp.length==0){
+        document.getElementById("plot_pca").style="width:0%;height:0%;";
+        return 0;
+    }
+    x_tmp=[]
+    y_tmp=[]
+    z_tmp=[]
+    for (i=0;i<tmp.length;i++)
+    {
+        x_tmp.push(tmp[i][0])
+        y_tmp.push(tmp[i][1])
+        z_tmp.push(tmp[i][2])
+    }
+    var trace1 = {
+        x:x_tmp, y: y_tmp, z: z_tmp,
+        mode: 'markers+text',
+        text:titles_tmp,
+        marker: {
+            size: 4,
+            line: {
+            color: 'rgba(217, 217, 217, 0.14)',
+            width: 0.5},
+            opacity: 0.8},
+        type: 'scatter3d',
+        name : "Wikipedia Articles"
+    };
+    tmp={{PCA_QUERY}}
+    var trace2 = {
+        x:[tmp[0]], y: [tmp[1]], z: [tmp[2]],
+        mode: 'markers+text',
+        text:["{{Last_query}}"],
+        marker: {
+            size: 15,
+            color:'rgba(210, 0, 0,1)',
+            line: {
+            color: 'rgba(210, 0, 0,1)',
+            width: 0.5},
+            opacity: 0.8},
+        type: 'scatter3d',
+        name:"Query"
+        
+    };
+
+    var data = [trace1,trace2];
+    var layout = {margin: {
+        l: 0,
+        r: 0,
+        b: 0,
+        t: 0
+    }};
+    Plotly.newPlot('plot_pca', data, layout);
+}
+    </script>
+</html>

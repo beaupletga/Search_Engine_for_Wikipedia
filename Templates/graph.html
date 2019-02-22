@@ -41,7 +41,7 @@
     nodes: nodes,
     edges: edges
     };
-    var options = {};
+    var options = {layout: {improvedLayout:false},physics:{enabled: true}};
     var network = new vis.Network(container, data, options);
 
     network.on("selectNode", function (params) {

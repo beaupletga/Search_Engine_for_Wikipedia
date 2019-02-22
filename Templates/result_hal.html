@@ -1,0 +1,104 @@
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.0/css/font-awesome.min.css">
+<style>
+    .search-title{
+        font-weight:normal;
+        color:#1a0dab;
+        font-size:18px;
+    }
+    .search-link{
+        color:#008443;
+    }
+
+    .search-link a{
+        color:#008443;
+        text-decoration:none
+    }
+
+
+    .search-para{
+        display:block;
+        color:#6a6a6a;
+    }
+    #wikipedia_logo{
+    width:70%;
+    height:10%;
+    }
+
+    .center {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+    }
+
+
+    #imaginary_container{
+    margin-top:20%; /* Don't copy this */
+}
+.stylish-input-group .input-group-addon{
+    background: white !important; 
+}
+.stylish-input-group .form-control{
+	border-right:0; 
+	box-shadow:0 0 0; 
+	border-color:#ccc;
+}
+.stylish-input-group button{
+    border:0;
+    background:transparent;
+}
+
+    .btn-group i{ cursor:pointer; text-decoration:none}
+
+</style>
+
+
+<div class="container-fluid" style="margin-top:50px;margin-left:20px; ">
+        <form action="/search/" method="get">
+	<div class="row">
+        <div class="col-sm-1" style="margin-top:0px; ">
+            {% load static %}
+            <a href="/"><img src="{% static 'images/logo_wikipedia.png' %}" id="wikipedia_logo"></a>	
+        </div>
+		<div class="col-sm-5" style="margin-top:20px ">
+		    <div class="row google-form text-center">
+			    
+				    <div class="input-group stylish-input-group">
+                            <input type="text" class="form-control" id="query" placeholder="Search" name="q" value="">
+                            <input name="k" type="hidden" value="20">
+                            <span class="input-group-addon">
+                                <button type="submit">
+                                    <span class="glyphicon glyphicon-search"></span>
+                                </button>  
+                            </span>
+                    </div>
+			    
+		    </div>
+        </div>
+        <div class="col-sm-1 text-center" onclick="sort_div('TF_IDF')" style="margin-top:20px;margin-left:-5px;">
+                <b>TF IDF</b>
+        </div>
+        <div class="col-sm-1 text-center" style="margin-top:20px;margin-left:-5px; ">
+                <b>PR</b>
+        </div>
+        <div class="col-sm-1 text-center" style="margin-top:20px;margin-left:-5px; ">
+            <b>Word2Vec</b>
+        </div>
+        <div class="col-sm-1 text-center" style="margin-top:20px;margin-left:-5px; ">
+                <a id="wikipedia" style="text-decoration: none;" class="text-dark" ><b>In Wikipedia</b></a>
+        </div>
+
+    </div>
+    </form>
+    
+</div>
+<div>
+    {% load static %}
+    <img src="{% static 'images/HAL.gif' %}" class="center">
+</div>
+</html>
