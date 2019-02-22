@@ -127,7 +127,6 @@ def get_closest_articles(C,query,k=10):
     result_dataset=[]
     conn = sqlite3.connect(path+'Database.db')
     c = conn.cursor()
-    dist_result=[]
     for i in range(k):
         # print(argsort_var[i])
         if dist[0,argsort_var[i]]!=0:
