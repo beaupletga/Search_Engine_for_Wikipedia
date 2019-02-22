@@ -29,7 +29,7 @@ All the project is done using Python (Django). The database is using sqlite3.
 The search is mainly based on the tf-idf matrix. When the user query something, it removes the stop words from the query and then search the articles with the best cosinus distance into the tf-idf matrix. We only keep k of these articles. The value of k is choosen by the user (by tuning its value into the URL). Finally we display for the user these articles, only the order of presentation depends on : 
 - The tf-idf value of the article for this query
 - The Word2Vec distance between the query and the mean Word2Vec vector of each article
-- The PageRank value of the article
+- The PageRank value of the article <br />
 You can set coefficient to each of these metrics to tune the order.
 
 ![](Images/metrics.png)
